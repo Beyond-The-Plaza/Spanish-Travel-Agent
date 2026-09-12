@@ -3,6 +3,18 @@ import { modules, drillWords, stepLabels, m1StepLabels } from '../data/modules.j
 
 let currentStep = 0;
 const standardContentTemplate = document.getElementById('std-content').innerHTML;
+
+// Per-module background photo, keyed by module number (m.n).
+// Any module not listed here (e.g. M0) falls back to DEFAULT_BG.
+const MODULE_BG = {
+  1:  'assets/m1-hero.jpg',
+  2:  'assets/m2-hero.jpg',
+  4:  'assets/m4-hero.jpg',
+  8:  'assets/m8-hero.jpg',
+  12: 'assets/m12-hero.jpg',
+  16: 'assets/m16-hero.jpg',
+};
+const DEFAULT_BG = 'https://i.imgur.com/jXbBlFF.jpg';
 // Which multi-step module is on screen — drives goStep() so M0 and M1
 // (and any future multi-step module) share one navigator without ID clashes.
 let activeMulti = { prefix: 'm0', panel: null, labels: stepLabels };
@@ -32,6 +44,7 @@ function render(i) {
   const isM1 = !!m.isM1;
   const isMulti = isM0 || isM1;
   document.getElementById('bg-num').textContent    = m.n;
+  document.getElementById('panel-bg-img').src      = MODULE_BG[m.n] || DEFAULT_BG;
   document.getElementById('track').textContent     = m.track;
   document.getElementById('mod-num').textContent   = String(m.n).padStart(2,'0');
   document.getElementById('mod-title').textContent = m.title;
