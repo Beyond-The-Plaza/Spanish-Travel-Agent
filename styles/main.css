@@ -378,7 +378,7 @@
     .slide { grid-template-columns: 1fr; }
 
     /* Compact the header so content isn't pushed far down the page */
-    .panel-left   { padding: 1.25rem 1.35rem; }
+    .panel-left   { padding: 1.25rem 1.35rem; min-height: 220px;}
     .module-number { font-size: 52px; margin-bottom: .15rem; }
     .track-pill,
     .module-label,
