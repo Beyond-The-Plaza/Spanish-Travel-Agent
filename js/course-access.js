@@ -47,6 +47,10 @@
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
       body: JSON.stringify({ productKey: config.courseProductKey })
     });
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error('Checkout is not available on this deployment yet. Publish this branch through Netlify, where the secure payment function can run.');
+    }
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Unable to start checkout.');
     window.location.assign(data.url);

@@ -1,6 +1,11 @@
 /* SOURCE: Splash-draftv3-parrot.html */
 import { modules, drillWords, stepLabels, m1StepLabels } from '../data/modules.js';
 
+/* DEV_BYPASS: when true, skips the Supabase paywall/entitlement check so every
+   module — including paid ones — renders locally with its banner image and its
+   local lesson file. Set to false to restore the real paywall before deploying. */
+const DEV_BYPASS = true;
+
 let currentStep = 0;
 const standardContentTemplate = document.getElementById('std-content').innerHTML;
 
@@ -99,6 +104,24 @@ function render(i) {
 async function openModule(i) {
   const m = modules[i];
   if (m.access !== 'paid') return render(i);
+
+  // DEV_BYPASS: skip the paywall and load the lesson straight from the local
+  // file (instead of the protected Netlify function) so the banner image and
+  // content show without Supabase configured.
+  if (DEV_BYPASS) {
+    render(i);
+    try {
+      const html = await fetch(`modules/${m.slug}.html`).then(r => r.text());
+      const template = document.createElement('template');
+      template.innerHTML = html;
+      const view = template.content.querySelector('.std-view');
+      document.getElementById('std-content').innerHTML = view ? view.innerHTML : html;
+    } catch (error) {
+      document.getElementById('std-content').innerHTML = `<div class="hook-block"><div class="hook-label">Dev preview</div><div class="hook-text">Couldn’t load modules/${m.slug}.html locally.</div></div>`;
+    }
+    return;
+  }
+
   const access = await window.courseAccess.refreshEntitlement();
   if (!access.paid) return window.courseAccess.showPaywall();
   render(i);

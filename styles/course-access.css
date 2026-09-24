@@ -11,4 +11,17 @@
 .course-access form .course-access__primary { margin-top: .25rem; }
 .course-access__close { position: absolute; top: .7rem; right: .8rem; padding: .2rem; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 23px; }
 .course-access__message { min-height: 1.25em; margin-top: .8rem; color: var(--terracotta) !important; font-size: 12px !important; }
-.sw-btn.is-locked::after { content: ' · locked'; opacity: .58; font-size: .78em; }
+/* Paid modules show a small padlock. The SVG is used as a mask so the icon
+   inherits the button's text colour (olive normally, white when .active). */
+.sw-btn.is-locked::after {
+  content: '';
+  display: inline-block;
+  width: .82em;
+  height: .82em;
+  margin-left: .4em;
+  vertical-align: -.1em;
+  opacity: .58;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20fill-rule='evenodd'%20d='M6%2010V7a6%206%200%201%201%2012%200v3h1a2%202%200%200%201%202%202v8a2%202%200%200%201-2%202H5a2%202%200%200%201-2-2v-8a2%202%200%200%201%202-2h1zm2%200h8V7a4%204%200%201%200-8%200v3z'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20fill-rule='evenodd'%20d='M6%2010V7a6%206%200%201%201%2012%200v3h1a2%202%200%200%201%202%202v8a2%202%200%200%201-2%202H5a2%202%200%200%201-2-2v-8a2%202%200%200%201%202-2h1zm2%200h8V7a4%204%200%201%200-8%200v3z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
