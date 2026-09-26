@@ -382,6 +382,12 @@
   @media (orientation: portrait) and (max-width: 900px) {
     body { padding: 1rem; gap: 1rem; }
 
+    /* The long header sub-label must wrap instead of forcing the whole page
+       wider than the phone (which pushed the step-nav's Next button off-screen). */
+    .page-header { flex-wrap: wrap; }
+    .page-header__right { flex: 1 1 100%; min-width: 0; justify-content: flex-start; }
+    .page-label { white-space: normal; }
+
     /* Stack: olive panel becomes a top header, content flows beneath */
     .slide { grid-template-columns: 1fr; }
 
@@ -396,6 +402,13 @@
 
     /* Content sizes to itself instead of the fixed desktop min-height */
     .panel-right  { min-height: auto; padding: 1.5rem 1.35rem; }
+
+    /* Stacked panels must shrink to the viewport. Without min-width:0 a grid
+       item can't go below its content's min-width, so the 5-across vowel row
+       forced the panel wider than the screen and pushed the step-nav's Next
+       button off the right edge (where the slide's overflow:hidden clipped it). */
+    .panel-left, .panel-right { min-width: 0; }
+    .vowel-row { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
 
     /* Tame the giant watermark digit on narrow screens */
     .bg-number    { font-size: clamp(120px, 46vw, 220px); }
