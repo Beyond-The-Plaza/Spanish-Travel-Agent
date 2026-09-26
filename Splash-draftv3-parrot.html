@@ -71,6 +71,9 @@
         <div class="step-dot" onclick="goStep(6)"></div>
       </div>
       <div class="step-label" id="m1-step-label" style="display:none">Who Are You? · 1 of 7</div>
+      <!-- Paid multi-step modules (M2+): dots and label are built from data/modules.js -->
+      <div class="step-dots" id="paid-dots" hidden></div>
+      <div class="step-label" id="paid-step-label" hidden></div>
     </div>
     <div class="students-tag">For: <span id="students">All students</span></div>
   </div>
@@ -143,6 +146,9 @@
 
   <!-- RIGHT: M1 multi-step (content injected by js/app.js via fetch) -->
   <div class="panel-right" id="panel-m1" style="display:none"></div>
+
+  <!-- RIGHT: paid multi-step modules — static step 1 + protected steps 2+ (js/app.js) -->
+  <div class="panel-right" id="panel-paid" hidden></div>
 </div>
 
 <script type="module" src="js/app.js"></script>

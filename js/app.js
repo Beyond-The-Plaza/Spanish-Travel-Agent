@@ -1,10 +1,13 @@
 /* SOURCE: Splash-draftv3-parrot.html */
 import { modules, drillWords, stepLabels, m1StepLabels } from '../data/modules.js';
 
-/* DEV_BYPASS: when true, skips the Supabase paywall/entitlement check so every
-   module — including paid ones — renders locally with its banner image and its
-   local lesson file. Set to false to restore the real paywall before deploying. */
-const DEV_BYPASS = true;
+/* DEV_BYPASS: skips the Supabase paywall/entitlement check so paid modules render
+   from local files. It can only be on when the page is served from this machine
+   (localhost, 127.x.x.x, ::1), so it can never be active on a deployed site.
+   Add ?paywall=on to the URL to switch it off locally and exercise the real
+   paywall path (e.g. with `netlify dev`). */
+const LOCAL_HOST = /^(localhost|127(\.\d{1,3}){3}|\[::1\])$/.test(window.location.hostname);
+const DEV_BYPASS = LOCAL_HOST && new URLSearchParams(window.location.search).get('paywall') !== 'on';
 
 let currentStep = 0;
 const standardContentTemplate = document.getElementById('std-content').innerHTML;
@@ -25,6 +28,8 @@ const DEFAULT_BG = 'https://i.imgur.com/jXbBlFF.jpg';
 let activeMulti = { prefix: 'm0', panel: null, labels: stepLabels };
 
 function goStep(n) {
+  // Paid modules: only step 1 is static. Anything beyond it needs the protected steps first.
+  if (activeMulti.gated && !activeMulti.unlocked && n > 0) { requestPaidSteps(n); return; }
   const panel = activeMulti.panel || document.getElementById('panel-' + activeMulti.prefix);
   if (!panel) return;
   const cur = panel.querySelector('.step-panel.active');
@@ -41,6 +46,124 @@ function goStep(n) {
 
 window.goStep = goStep;
 
+/* ── Paid multi-step modules (M2+) ──────────────────────────────────────
+   Step 1 is static (m.preview, fetched at startup, precached by the service
+   worker) and never touches Supabase. Steps 2+ are fetched on demand from the
+   protected lesson function and stitched onto the panel. Three outcomes:
+     locked       → not signed in / not purchased  → paywall with the buy CTA
+     unavailable  → backend down or paused         → notice, NEVER a buy button
+     ok           → served from the per-user cache when there is one            */
+const panelPaid = document.getElementById('panel-paid');
+const paidDots  = document.getElementById('paid-dots');
+const paidLabel = document.getElementById('paid-step-label');
+const previewHtml = {};   // m.n → static step 1 partial
+const paidSteps   = {};   // m.n → protected steps 2+ (memory only, this page load)
+const devStepsSource = (m) => `book1_content/course-modules/${m.slug}.html`;
+
+function setupPaidModule(m) {
+  const ctx = { prefix: 'paid', panel: panelPaid, labels: m.stepLabels, module: m, gated: true, unlocked: false, loading: false };
+  activeMulti = ctx;
+  panelPaid.innerHTML = previewHtml[m.n] ||
+    '<div class="hook-block"><div class="hook-label">Preview</div><div class="hook-text">This preview couldn’t be loaded. Check your connection and reopen the module.</div></div>';
+  paidDots.innerHTML = m.stepLabels.map((_, i) => `<div class="step-dot${i ? ' is-locked' : ''}" data-step="${i}"></div>`).join('');
+  paidDots.onclick = (e) => { const dot = e.target.closest('.step-dot'); if (dot) goStep(Number(dot.dataset.step)); };
+  if (paidSteps[m.n]) mountPaidSteps(ctx, paidSteps[m.n]);
+  goStep(0);
+}
+
+function mountPaidSteps(ctx, html) {
+  const template = document.createElement('template');
+  template.innerHTML = html;
+  const steps = template.content.querySelectorAll('.step-panel');
+  if (!steps.length) return false;
+  steps.forEach((step) => { step.classList.remove('active'); ctx.panel.appendChild(step); });
+  ctx.unlocked = true;
+  paidDots.querySelectorAll('.is-locked').forEach((dot) => dot.classList.remove('is-locked'));
+  return true;
+}
+
+function showPaidNotice(ctx, title, text) {
+  clearPaidNotice(ctx);
+  const notice = document.createElement('div');
+  notice.className = 'paid-notice';
+  notice.setAttribute('role', 'status');
+  const heading = document.createElement('span');
+  heading.className = 'paid-notice__title';
+  heading.textContent = title;
+  notice.append(heading, text);
+  const active = ctx.panel.querySelector('.step-panel.active');
+  if (active) active.insertBefore(notice, active.querySelector('.step-nav'));
+}
+
+function clearPaidNotice(ctx) {
+  ctx.panel.querySelectorAll('.paid-notice').forEach((notice) => notice.remove());
+}
+
+async function loadPaidSteps(m) {
+  if (DEV_BYPASS) {
+    try {
+      const res = await fetch(devStepsSource(m));
+      if (!res.ok) throw new Error(res.status);
+      return { status: 'ok', html: await res.text() };
+    } catch (error) {
+      return { status: 'unavailable', detail: `Dev bypass couldn’t load ${devStepsSource(m)}.` };
+    }
+  }
+  const access = window.courseAccess;
+  if (!access) return { status: 'unavailable' };
+
+  // Purchased and cached: serve locally, then re-check in the background.
+  const cached = await access.getCachedLesson(m.slug);
+  if (cached) { revalidatePaidLesson(m); return { status: 'ok', html: cached }; }
+
+  const entitlement = await access.refreshEntitlement();
+  if (entitlement.unavailable || entitlement.configurationRequired) return { status: 'unavailable' };
+  if (!entitlement.paid) return { status: 'locked' };
+  try {
+    const html = await access.fetchLesson(m.slug);
+    access.cacheLesson(m.slug, html);
+    return { status: 'ok', html };
+  } catch (error) {
+    if (error.status === 401 || error.status === 403) return { status: 'locked' };
+    if (error.status === 404) return { status: 'unpublished' };
+    return { status: 'unavailable' };
+  }
+}
+
+/* After serving a cached lesson: drop it if access was revoked, refresh it otherwise.
+   If Supabase can't be reached we can't tell, so the cached copy stays. */
+async function revalidatePaidLesson(m) {
+  const access = window.courseAccess;
+  const entitlement = await access.refreshEntitlement();
+  if (entitlement.unavailable || entitlement.configurationRequired) return;
+  if (!entitlement.paid) {
+    await access.clearLessonCache();
+    delete paidSteps[m.n];
+    if (activeMulti.module === m) setupPaidModule(m);
+    return;
+  }
+  try { access.cacheLesson(m.slug, await access.fetchLesson(m.slug)); } catch (error) { /* keep what we have */ }
+}
+
+async function requestPaidSteps(n) {
+  const ctx = activeMulti;
+  if (ctx.loading) return;
+  ctx.loading = true;
+  showPaidNotice(ctx, 'Course member', 'Loading your lesson…');
+  const result = await loadPaidSteps(ctx.module);
+  ctx.loading = false;
+  if (activeMulti !== ctx) return;   // user switched module while we waited
+  clearPaidNotice(ctx);
+
+  if (result.status === 'ok') {
+    if (mountPaidSteps(ctx, result.html)) { paidSteps[ctx.module.n] = result.html; return goStep(n); }
+    result.status = 'unpublished';   // object exists but holds no step panels yet
+  }
+  if (result.status === 'locked') return window.courseAccess.showPaywall();
+  if (result.status === 'unpublished') return showPaidNotice(ctx, 'Coming soon', 'The rest of this lesson has not been published yet.');
+  showPaidNotice(ctx, 'Temporarily unavailable', result.detail || 'Content temporarily unavailable, try again shortly.');
+}
+
 const switcher = document.getElementById('switcher');
 
 function render(i) {
@@ -48,6 +171,7 @@ function render(i) {
   const isM0 = !!m.isM0;
   const isM1 = !!m.isM1;
   const isMulti = isM0 || isM1;
+  const isPaidMulti = !!m.preview;
   document.getElementById('bg-num').textContent    = m.n;
   document.getElementById('panel-bg-img').src      = MODULE_BG[m.n] || DEFAULT_BG;
   document.getElementById('track').textContent     = m.track;
@@ -56,11 +180,14 @@ function render(i) {
   document.getElementById('level').textContent     = m.level;
   document.getElementById('students').textContent  = m.students;
 
-  document.getElementById('panel-standard').style.display = isMulti ? 'none' : 'flex';
+  document.getElementById('panel-standard').style.display = (isMulti || isPaidMulti) ? 'none' : 'flex';
   document.getElementById('panel-m0').style.display       = isM0 ? 'flex' : 'none';
   document.getElementById('panel-m1').style.display       = isM1 ? 'flex' : 'none';
+  panelPaid.hidden = !isPaidMulti;
+  paidDots.hidden  = !isPaidMulti;
+  paidLabel.hidden = !isPaidMulti;
 
-  if (!isMulti) {
+  if (!isMulti && !isPaidMulti) {
     document.getElementById('std-content').innerHTML = standardContentTemplate;
     document.getElementById('std-content').style.display = '';
     document.getElementById('std-signup').style.display  = 'none';
@@ -82,6 +209,8 @@ function render(i) {
           `<span class="vocab-pill vw-audio-pill"><button class="vw-speak-btn" aria-label="Play ${w}" onclick="vwSpeak('${w}', 0.85)">${speakerSvg}</button>${w}</span>`
         ).join('');
     }
+  } else if (isPaidMulti) {
+    setupPaidModule(m);
   } else if (m.access === 'paid') {
     document.getElementById('std-content').innerHTML = '<div class="hook-block"><div class="hook-label">Course member</div><div class="hook-text">Loading your lesson…</div></div>';
   } else {
@@ -104,6 +233,8 @@ function render(i) {
 async function openModule(i) {
   const m = modules[i];
   if (m.access !== 'paid') return render(i);
+  // Multi-step paid modules render their static step 1 immediately; steps 2+ load on demand.
+  if (m.preview) return render(i);
 
   // DEV_BYPASS: skip the paywall and load the lesson straight from the local
   // file (instead of the protected Netlify function) so the banner image and
@@ -161,5 +292,16 @@ if (window.vwDrillInit) window.vwDrillInit();
 
 const m1html = await fetch('modules/m1-who-are-you.html').then(r => r.text());
 document.getElementById('panel-m1').innerHTML = m1html;
+
+for (const m of modules) {
+  if (!m.preview) continue;
+  try {
+    const res = await fetch(m.preview);
+    if (!res.ok) throw new Error(res.status);
+    previewHtml[m.n] = await res.text();
+  } catch (error) {
+    console.warn(`[app] couldn’t load preview for M${m.n}`, error);
+  }
+}
 
 render(0);

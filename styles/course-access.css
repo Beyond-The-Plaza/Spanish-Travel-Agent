@@ -25,3 +25,8 @@
   -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20fill-rule='evenodd'%20d='M6%2010V7a6%206%200%201%201%2012%200v3h1a2%202%200%200%201%202%202v8a2%202%200%200%201-2%202H5a2%202%200%200%201-2-2v-8a2%202%200%200%201%202-2h1zm2%200h8V7a4%204%200%201%200-8%200v3z'/%3E%3C/svg%3E") center / contain no-repeat;
           mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20fill-rule='evenodd'%20d='M6%2010V7a6%206%200%201%201%2012%200v3h1a2%202%200%200%201%202%202v8a2%202%200%200%201-2%202H5a2%202%200%200%201-2-2v-8a2%202%200%200%201%202-2h1zm2%200h8V7a4%204%200%201%200-8%200v3z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
+
+/* Shown inside a paid module when steps 2+ can't be loaded (backend down or paused).
+   Deliberately has no buy button: someone who already paid must never be asked to pay again. */
+.paid-notice { padding: .7rem .9rem; border: 1px solid rgba(196,97,74,.35); border-left-width: 3px; border-radius: 3px; background: rgba(196,97,74,.06); color: var(--charcoal); font-size: 12px; line-height: 1.45; }
+.paid-notice__title { display: block; margin-bottom: 2px; color: var(--terracotta); font: 500 9px var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }

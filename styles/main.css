@@ -124,6 +124,9 @@
   }
   .step-dot.active { background: var(--gold); transform: scale(1.3); }
   .step-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: .13em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-top: .6rem; }
+  /* Paid-module containers use the `hidden` attribute; their display rules would otherwise win. */
+  .panel-right[hidden], .step-dots[hidden], .step-label[hidden] { display: none; }
+  .step-dot.is-locked { opacity: .4; }
 
   .students-tag { font-size: 10px; color: rgba(255,255,255,.32); font-weight: 300; margin-top: auto; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,.09); }
   .students-tag span { color: rgba(255,255,255,.58); font-weight: 400; }
@@ -220,6 +223,7 @@
   .nav-btn { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: none; border: 1px solid rgba(61,74,46,.2); color: var(--olive-mid); padding: 5px 13px; border-radius: 2px; cursor: pointer; transition: background .15s, color .15s; }
   .nav-btn:hover { background: var(--olive); color: var(--white); border-color: var(--olive); }
   .nav-btn:disabled { opacity: .25; pointer-events: none; }
+  .nav-btn--complete { background: var(--olive); color: var(--white); border-color: var(--olive); }
   .nav-counter { font-family: var(--font-mono); font-size: 9px; color: var(--muted); letter-spacing: .1em; }
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
@@ -366,6 +370,48 @@
   .more-practice { font-family: var(--font-mono); font-size: 9px; letter-spacing: .04em; color: var(--muted); }
   .more-practice a { color: var(--terracotta); text-decoration: none; border-bottom: 1px solid rgba(196,97,74,.35); }
   .more-practice a:hover { border-color: var(--terracotta); }
+
+  /* ══════════════════════════════════════════════════════════════
+     Paid multi-step modules (M2+) — dialogue block and practice
+     variants. Reuses .quiz-item / .quiz-q / .quiz-a from Module 1.
+     ══════════════════════════════════════════════════════════════ */
+  .dialogue { display: flex; flex-direction: column; gap: 6px; }
+  .dialogue-line { background: var(--white); border: 1px solid rgba(61,74,46,.1); border-radius: 4px; padding: .55rem .8rem; cursor: pointer; display: grid; grid-template-columns: 22px 1fr auto; column-gap: 8px; align-items: baseline; transition: border-color .15s; }
+  .dialogue-line:hover { border-color: rgba(196,97,74,.4); }
+  .dialogue-who { font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em; color: var(--terracotta); }
+  .dialogue-es { font-family: var(--font-display); font-style: italic; font-size: 12.5px; color: var(--charcoal); line-height: 1.35; }
+  .dialogue-line .vw-speak-btn { grid-column: 3; grid-row: 1; align-self: center; }
+  .dialogue-en { grid-column: 2 / -1; font-size: 10.5px; color: var(--muted); line-height: 1.4; max-height: 0; opacity: 0; overflow: hidden; transition: max-height .2s, opacity .2s, margin-top .2s; }
+  .dialogue-line.revealed .dialogue-en { max-height: 6em; opacity: 1; margin-top: 3px; }
+
+  /* Practice items whose prompt or answer is a full sentence rather than one word */
+  .quiz-item.stack { flex-direction: column; align-items: stretch; gap: 4px; }
+  .quiz-item.stack .quiz-a { white-space: normal; text-transform: none; letter-spacing: 0; font-size: 11px; opacity: 0; max-height: 0; overflow: hidden; transform: none; }
+  .quiz-item.stack.revealed .quiz-a { opacity: 1; max-height: 12em; }
+  .quiz-tools { display: flex; align-items: center; gap: 10px; }
+  .quiz-hint-btn { font-family: var(--font-mono); font-size: 8px; letter-spacing: .1em; text-transform: uppercase; background: none; border: 1px solid rgba(61,74,46,.2); color: var(--olive-mid); padding: 2px 8px; border-radius: 2px; cursor: pointer; }
+  .quiz-hint-text { font-family: var(--font-mono); font-size: 9px; color: var(--muted); display: none; }
+  .quiz-item.hint-open .quiz-hint-text { display: inline; }
+
+  /* "Four paths" illustration (M2 · A + el = al). Brand tokens only, so it follows the tweaks panel. */
+  .path-map { margin: 0; }
+  .path-map svg { display: block; width: 100%; max-width: 440px; height: auto; margin: 0 auto; }
+  .path-line { fill: none; stroke: var(--terracotta); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 1 6; opacity: .75; }
+  /* Ink-line character: uniform charcoal outline, flat fills, one terracotta accent (the backpack). */
+  .path-ink { fill: none; stroke: var(--charcoal); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .path-ink.path-paper { fill: var(--white); }
+  .path-ink.path-pack { fill: var(--terracotta); }
+  .path-ink.path-shoe { fill: var(--charcoal); }
+  .path-hair { fill: var(--charcoal); }
+  .path-mark { font-family: var(--font-display); font-weight: 900; font-size: 24px; fill: var(--terracotta); }
+  .path-stop { fill: var(--olive); }
+  .path-icon { fill: none; stroke: var(--cream); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .path-label { font-family: var(--font-display); font-style: italic; font-size: 13px; fill: var(--charcoal); }
+  .path-art { font-family: var(--font-mono); font-style: normal; font-weight: 500; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+  .path-art--al { fill: var(--terracotta); }
+  .path-art--ala { fill: var(--olive-mid); }
+  .path-credit { margin-top: 4px; text-align: center; font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .path-start-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; fill: var(--muted); }
 
   @media (max-width: 680px) {
     .conj-table td, .conj-table th { font-size: 11px; }

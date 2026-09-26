@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+book1_content/
 
 # Environment / secrets (Supabase keys, etc.)
 .env
