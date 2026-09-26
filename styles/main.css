@@ -419,7 +419,6 @@
     .step-nav       { padding-top: .6rem; }
 
     /* Fewer columns so cards stay legible instead of shrinking to fit */
-    .vowel-row  { grid-template-columns: repeat(3, 1fr); row-gap: 8px; }
     .oc-grid    { grid-template-columns: 1fr; }
     .conj-grid  { grid-template-columns: repeat(3, 1fr); }
     .use-row    { grid-template-columns: 1fr; gap: 4px; }
@@ -434,7 +433,7 @@
        forced the panel wider than the screen and pushed the step-nav's Next
        button off the right edge (where the slide's overflow:hidden clipped it). */
     .panel-left, .panel-right { min-width: 0; }
-    .vowel-row { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
+    .vowel-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 5px; }
 
     /* Tame the giant watermark digit on narrow screens */
     .bg-number    { font-size: clamp(120px, 46vw, 220px); }
