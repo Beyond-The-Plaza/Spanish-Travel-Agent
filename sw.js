@@ -6,7 +6,7 @@
  * cross-origin requests (Google Fonts, React/Babel, ConvertKit CDNs)
  * pass straight through to the network.
  * ───────────────────────────────────────────────────────────── */
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v6';
 const CACHE_NAME = 'btp-shell-' + CACHE_VERSION;
 
 /* Same-origin files that make up the installable app shell. */
@@ -30,8 +30,10 @@ const PRECACHE = [
   'data/modules.js',
   'modules/m0-sound-like-spanish.html',
   'modules/m1-who-are-you.html',
+  'modules/preview/m2-going-places.html',
   'modules/popups/m0-complete.html',
   'modules/popups/m1-complete.html',
+  'modules/popups/m2-complete.html',
   'assets/favicon.svg',
   'assets/favicon-16.png',
   'assets/favicon-32.png',
@@ -71,6 +73,12 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;   // CDN fonts/React/etc. → straight to network
+
+  // Never cache API or paid-lesson traffic. Without this, entitlement checks and
+  // protected lesson HTML fall through to the cache-first branch below and get
+  // stored (and served stale, even after sign-out). Paid content is cached only
+  // by js/course-access.js, per user, and cleared on sign-out.
+  if (url.pathname.startsWith('/.netlify/') || url.pathname.startsWith('/book1_content/')) return;
 
   // Page navigations: network-first (fresh when online), cache fallback (works offline).
   if (req.mode === 'navigate') {

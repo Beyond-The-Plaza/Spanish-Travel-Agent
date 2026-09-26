@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+book1_content/
+
+# Environment / secrets (Supabase keys, etc.)
+.env
+.env.*
+!.env.example
+
+# Supabase CLI local artifacts
+supabase/.temp/
+supabase/.branches/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.log

@@ -8,7 +8,11 @@ export const modules = [
     es:"Nosotros somos carismáticos pero no somos elegantes.", en:"We are charismatic but we are not elegant.",
     drill:"Ser or Estar? Complete: Yo ___ de Canadá. / Ella ___ cansada hoy.",
     culture:"Estoy cansado means you had a long day — not that you're a tired person. Your mood is always temporary in Spanish." },
-  { n:2, title:"Going Places", track:"Beginner", level:"A1–A2", students:"All students", access:"paid", slug:"m2-going-places" },
+  /* Step 1 of a paid multi-step module ships static (`preview`); steps 2+ come from the
+     protected lesson function. `stepLabels` is static so locked dots and "1 of N" render offline. */
+  { n:2, title:"Going Places", track:"Beginner", level:"A1–A2", students:"All students", access:"paid", slug:"m2-going-places",
+    preview:"modules/preview/m2-going-places.html",
+    stepLabels:["Overview · 1 of 6","IR · 2 of 6","Near future · 3 of 6","A + el = al · 4 of 6","Questions · 5 of 6","Practice · 6 of 6"] },
   { n:4, title:"A Day in the Life", track:"Beginner", level:"A2", students:"All students", access:"paid", slug:"m4-day-in-life" },
   { n:8, title:"Para vs Por", track:"Intermediate", level:"B1–B2", students:"Course members", access:"paid", slug:"m8-para-vs-por" },
   { n:12, title:"The Subjunctive", track:"Advanced", level:"B2", students:"Course members", access:"paid", slug:"m12-subjunctive" },

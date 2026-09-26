@@ -15,15 +15,30 @@
   }
 
   async function refreshEntitlement() {
+    // Supabase settings missing = a real configuration problem. The supabase-js script simply
+    // not loading (offline, blocked CDN) is an outage and must not look like "not paid".
+    if (!config.supabaseUrl || !config.supabaseAnonKey) return entitlement = { loaded: true, paid: false, configurationRequired: true };
     const supabase = getClient();
-    if (!supabase) return entitlement = { loaded: true, paid: false, configurationRequired: true };
-    const { data: { session } } = await supabase.auth.getSession();
+    if (!supabase) return entitlement = { loaded: true, paid: false, unavailable: true };
+    let session;
+    try {
+      ({ data: { session } } = await supabase.auth.getSession());
+    } catch (error) {
+      return entitlement = { loaded: true, paid: false, unavailable: true };
+    }
     if (!session) return entitlement = { loaded: true, paid: false, signedIn: false };
-    const response = await fetch('/.netlify/functions/access-status', {
-      headers: { Authorization: `Bearer ${session.access_token}` }
-    });
+    let response;
+    try {
+      response = await fetch('/.netlify/functions/access-status', {
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+    } catch (error) {
+      return entitlement = { loaded: true, paid: false, signedIn: true, unavailable: true };
+    }
+    if (response.status >= 500) return entitlement = { loaded: true, paid: false, signedIn: true, unavailable: true };
     if (!response.ok) return entitlement = { loaded: true, paid: false, signedIn: true };
     const data = await response.json();
+    if (data.paid && data.user) rememberUser(data.user.id);
     return entitlement = { loaded: true, paid: Boolean(data.paid), signedIn: true, user: data.user };
   }
 
@@ -47,6 +62,10 @@
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
       body: JSON.stringify({ productKey: config.courseProductKey })
     });
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error('Checkout is not available on this deployment yet. Publish this branch through Netlify, where the secure payment function can run.');
+    }
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Unable to start checkout.');
     window.location.assign(data.url);
@@ -88,22 +107,91 @@
 
   async function fetchLesson(slug) {
     const supabase = getClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    const response = await fetch(`/.netlify/functions/course-lesson?slug=${encodeURIComponent(slug)}`, {
-      headers: { Authorization: `Bearer ${session.access_token}` }
-    });
+    if (!supabase) throw lessonError('Course service unavailable.', 0);
+    let response;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw lessonError('Sign in required.', 401);
+      response = await fetch(`/.netlify/functions/course-lesson?slug=${encodeURIComponent(slug)}`, {
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+    } catch (error) {
+      throw error.status ? error : lessonError('Course service unavailable.', 0);
+    }
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
-      throw new Error(data.error || 'This lesson is not available to your account.');
+      throw lessonError(data.error || 'This lesson is not available to your account.', response.status);
     }
     return response.text();
   }
 
-  window.courseAccess = { refreshEntitlement, showPaywall, startCheckout, fetchLesson, get entitlement() { return entitlement; } };
+  /* status: 0 = network failure, 401 = not signed in, 403 = not paid, 404 = not published, 5xx/503 = backend down */
+  function lessonError(message, status) {
+    const error = new Error(message);
+    error.status = status;
+    return error;
+  }
+
+  /* ── Per-user lesson cache (IndexedDB) ────────────────────────────────
+     Lets a paying member reopen steps 2+ without Supabase, including during an
+     outage. Keyed by user id + slug and wiped on sign-out. Revalidated in the
+     background by js/app.js, which drops it if access is revoked.
+     Note: there is no expiry yet — add one to `cacheLesson`/`getCachedLesson`
+     (compare `cachedAt`) if offline access should lapse after N days. */
+  const CACHE_DB = 'btp-lessons';
+  const CACHE_STORE = 'lessons';
+  const LAST_USER_KEY = 'btp_uid';
+
+  function rememberUser(id) { try { localStorage.setItem(LAST_USER_KEY, id); } catch (error) { /* private mode */ } }
+  function forgetUser() { try { localStorage.removeItem(LAST_USER_KEY); } catch (error) { /* private mode */ } }
+  function cacheUserId() {
+    if (entitlement.user && entitlement.user.id) return entitlement.user.id;
+    try { return localStorage.getItem(LAST_USER_KEY); } catch (error) { return null; }
+  }
+
+  function withStore(mode, run) {
+    return new Promise((resolve, reject) => {
+      if (!window.indexedDB) return reject(new Error('IndexedDB unavailable'));
+      const open = indexedDB.open(CACHE_DB, 1);
+      open.onupgradeneeded = () => open.result.createObjectStore(CACHE_STORE);
+      open.onerror = () => reject(open.error);
+      open.onsuccess = () => {
+        const db = open.result;
+        const tx = db.transaction(CACHE_STORE, mode);
+        const request = run(tx.objectStore(CACHE_STORE));
+        tx.oncomplete = () => { db.close(); resolve(request ? request.result : undefined); };
+        tx.onerror = tx.onabort = () => { db.close(); reject(tx.error); };
+      };
+    });
+  }
+
+  async function getCachedLesson(slug) {
+    const uid = cacheUserId();
+    if (!uid) return null;
+    try {
+      const entry = await withStore('readonly', (store) => store.get(`${uid}:${slug}`));
+      return entry && entry.html ? entry.html : null;
+    } catch (error) { return null; }
+  }
+
+  async function cacheLesson(slug, html) {
+    const uid = cacheUserId();
+    if (!uid) return;
+    try { await withStore('readwrite', (store) => store.put({ html, cachedAt: Date.now() }, `${uid}:${slug}`)); } catch (error) { /* cache is best-effort */ }
+  }
+
+  async function clearLessonCache() {
+    try { await withStore('readwrite', (store) => store.clear()); } catch (error) { /* nothing to clear */ }
+  }
+
+  window.courseAccess = { refreshEntitlement, showPaywall, startCheckout, fetchLesson, getCachedLesson, cacheLesson, clearLessonCache, get entitlement() { return entitlement; } };
   if (configured()) {
-    getClient().auth.onAuthStateChange(() => refreshEntitlement().then(() => {
-      if (new URLSearchParams(window.location.search).get('checkout') === 'success') window.courseAccess.showPaywall();
-    }));
+    getClient().auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') { forgetUser(); clearLessonCache(); }
+      return refreshEntitlement().then(() => {
+        if (new URLSearchParams(window.location.search).get('checkout') === 'success') window.courseAccess.showPaywall();
+      });
+    });
     refreshEntitlement();
   }
 }());
