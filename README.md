@@ -27,47 +27,9 @@ also cached per-user in IndexedDB (`js/course-access.js`), so it's still
 available if the backend is briefly down, and is cleared on sign-out or if
 their access is revoked.
 
-### One-time setup
-
-1. Create a Supabase project and enable **Email / Magic Link** authentication.
-2. In Supabase SQL Editor, run `supabase/course-access.sql`.
-3. In Supabase Storage, create a bucket named `course-modules`. It must remain
-   **private**.
-4. Add these Netlify environment variables (never place the last three in a
-   browser file):
-
-   ```text
-   SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-   SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
-   SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
-   STRIPE_SECRET_KEY=sk_test_...
-   STRIPE_WEBHOOK_SECRET=whsec_...
-   STRIPE_FULL_COURSE_PRICE_ID=price_...
-   ```
-
-5. Put the first two values only in `js/course-config.js`. The Supabase anon
-   key is safe to publish; Stripe secret keys and the Supabase service-role key
-   are not.
-6. In Stripe test mode, create a one-time product called **Beyond the Plaza —
-   Full Course**, copy its Price ID into Netlify, and create a webhook endpoint:
-   `https://YOUR_DOMAIN/.netlify/functions/stripe-webhook`. Subscribe it to
-   `checkout.session.completed`.
-7. Upload each module only when it is ready to release. In the private
-   `course-modules` bucket, use these exact object names:
-
-   ```text
-   m2-going-places.html
-   m4-day-in-life.html
-   m8-para-vs-por.html
-   m12-subjunctive.html
-   m16-poetry-song-culture.html
-   ```
-
-   For a single-step module the object is the whole lesson. For a multi-step
-   module (step 1 already lives in `modules/preview/`), the object holds only
-   the remaining `.step-panel` blocks, which the app appends after step 1.
-   A paid user sees a polite "not published yet" result until the private
-   file is uploaded.
+The one-time Supabase/Stripe/Netlify setup steps (environment variables,
+bucket creation, webhook config, bucket object names) are kept out of this
+public-facing file — see `book1_content/IMPLEMENTATION-LOG.md` (gitignored).
 
 ### Authoring and release workflow
 

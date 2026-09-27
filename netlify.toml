@@ -1,5 +1,15 @@
 [build]
   functions = "netlify/functions"
 
+[build.environment]
+  # js/course-config.js intentionally contains the real Supabase project URL
+  # and anon key — Supabase documents the anon key as safe for the browser.
+  # Without this, Netlify's secret scanner flags them as if they'd leaked
+  # (it matches any published file against the SUPABASE_URL / SUPABASE_ANON_KEY
+  # env vars set on this site, with no way to mark one use as intentional).
+  # The service-role key and Stripe secrets are never in client files, so
+  # scanning still fully covers those.
+  SECRETS_SCAN_OMIT_PATHS = "js/course-config.js"
+
 [functions]
   node_bundler = "esbuild"
