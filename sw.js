@@ -6,7 +6,7 @@
  * cross-origin requests (Google Fonts, React/Babel, ConvertKit CDNs)
  * pass straight through to the network.
  * ───────────────────────────────────────────────────────────── */
-const CACHE_VERSION = 'v6';
+const CACHE_VERSION = 'v7';
 const CACHE_NAME = 'btp-shell-' + CACHE_VERSION;
 
 /* Same-origin files that make up the installable app shell. */
@@ -31,9 +31,11 @@ const PRECACHE = [
   'modules/m0-sound-like-spanish.html',
   'modules/m1-who-are-you.html',
   'modules/preview/m2-going-places.html',
+  'modules/preview/m4-day-in-life.html',
   'modules/popups/m0-complete.html',
   'modules/popups/m1-complete.html',
   'modules/popups/m2-complete.html',
+  'modules/popups/m4-complete.html',
   'assets/favicon.svg',
   'assets/favicon-16.png',
   'assets/favicon-32.png',

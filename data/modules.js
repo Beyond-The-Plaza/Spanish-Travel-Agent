@@ -13,7 +13,9 @@ export const modules = [
   { n:2, title:"Going Places", track:"Beginner", level:"A1–A2", students:"All students", access:"paid", slug:"m2-going-places",
     preview:"modules/preview/m2-going-places.html",
     stepLabels:["Overview · 1 of 6","IR · 2 of 6","Near future · 3 of 6","A + el = al · 4 of 6","Questions · 5 of 6","Practice · 6 of 6"] },
-  { n:4, title:"A Day in the Life", track:"Beginner", level:"A2", students:"All students", access:"paid", slug:"m4-day-in-life" },
+  { n:4, title:"A Day in the Life", track:"Beginner", level:"A2", students:"All students", access:"paid", slug:"m4-day-in-life",
+    preview:"modules/preview/m4-day-in-life.html",
+    stepLabels:["Overview · 1 of 7","Reflexives · 2 of 7","Morning · 3 of 7","Afternoon · 4 of 7","Evening · 5 of 7","Word families · 6 of 7","Practice · 7 of 7"] },
   { n:8, title:"Para vs Por", track:"Intermediate", level:"B1–B2", students:"Course members", access:"paid", slug:"m8-para-vs-por" },
   { n:12, title:"The Subjunctive", track:"Advanced", level:"B2", students:"Course members", access:"paid", slug:"m12-subjunctive" },
   { n:16, title:"Poetry, Song & Culture", track:"Advanced", level:"C1", students:"Course members", access:"paid", slug:"m16-poetry-song-culture" }

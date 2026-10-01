@@ -413,6 +413,27 @@
   .path-credit { margin-top: 4px; text-align: center; font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
   .path-start-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; fill: var(--muted); }
 
+  /* "Day at a glance" illustration (M4 overview) — original, brand-only artwork:
+     a sun's arc across morning/afternoon/evening. Not based on any book's art. */
+  .day-map { margin: 0; }
+  .day-map svg { display: block; width: 100%; max-width: 420px; height: auto; margin: 0 auto; }
+  .day-ground { stroke: var(--terracotta); stroke-width: 1.6; stroke-dasharray: 1 6; stroke-linecap: round; opacity: .6; }
+  .day-arc { fill: none; stroke: var(--gold); stroke-width: 1.6; stroke-dasharray: 3 5; stroke-linecap: round; }
+  .day-sun { fill: var(--gold); }
+  .day-sun-ray { stroke: var(--gold); stroke-width: 1.6; stroke-linecap: round; }
+  .day-horizon { fill: none; stroke: var(--cream); stroke-width: 2; }
+  .day-moon { fill: var(--olive); }
+  .day-star { fill: var(--gold); }
+  .day-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; fill: var(--muted); }
+
+  /* Narrator-driven story (M4) — same tap-to-reveal pattern as .dialogue, but a
+     numbered line instead of a two-speaker "who" badge. */
+  .dialogue-line.narrator .dialogue-who { font-size: 8px; color: var(--olive-mid); }
+
+  /* Multiple labelled vocab groups per step (M4: "Places", "Food", "Activities"…) */
+  .vocab-group + .vocab-group { margin-top: 8px; }
+  .vocab-group-label { display: block; font-family: var(--font-mono); font-size: 8px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+
   @media (max-width: 680px) {
     .conj-table td, .conj-table th { font-size: 11px; }
     .contrast-row { grid-template-columns: 1fr; }
