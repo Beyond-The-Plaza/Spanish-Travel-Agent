@@ -15,8 +15,12 @@
 const POPUP_ROUTES = {
   m0: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.render(1); } },
   m1: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModule(2); } },
-  m2: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModule(3); } },   // modules[3] = M4
-  m4: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModule(4); } },   // modules[4] = M8
+  // Routes target a module by its NUMBER (openModuleByNumber), not its array
+  // index — the array shifts whenever an earlier module (e.g. M3, M5, M6, M7)
+  // gets inserted, which previously broke these silently.
+  m2: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModuleByNumber(3); } },
+  m3: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModuleByNumber(4); } },
+  m4: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModuleByNumber(8); } },
 };
 
 window.POPUP_ROUTES = POPUP_ROUTES;

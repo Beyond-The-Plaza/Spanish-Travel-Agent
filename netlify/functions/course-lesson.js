@@ -1,6 +1,6 @@
 const { json, unavailable, authenticatedUser, hasCourseAccess, supabase } = require('./_course');
 
-const ALLOWED_LESSONS = new Set(['m2-going-places', 'm4-day-in-life', 'm8-para-vs-por', 'm12-subjunctive', 'm16-poetry-song-culture']);
+const ALLOWED_LESSONS = new Set(['m2-going-places', 'm3-what-where-why', 'm4-day-in-life', 'm8-para-vs-por', 'm12-subjunctive', 'm16-poetry-song-culture']);
 
 exports.handler = async (event) => {
   try {

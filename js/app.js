@@ -17,6 +17,7 @@ const standardContentTemplate = document.getElementById('std-content').innerHTML
 const MODULE_BG = {
   1:  'assets/m1-hero.jpg',
   2:  'assets/m2-hero.jpg',
+  3:  'assets/m3-hero.jpg',
   4:  'assets/m4-hero.jpg',
   8:  'assets/m8-hero.jpg',
   12: 'assets/m12-hero.jpg',
@@ -267,6 +268,16 @@ async function openModule(i) {
   }
 }
 
+/* Completion-popup "next module" routes (js/popups.js) address a module by its
+   number (m.n), not its array index — the array shifts whenever an earlier
+   module is inserted (e.g. M3 landing between M2 and M4), which previously
+   broke M2's and M4's "next" buttons silently. */
+function openModuleByNumber(n) {
+  const i = modules.findIndex(m => m.n === n);
+  if (i !== -1) openModule(i);
+  else console.warn(`[app] openModuleByNumber: no module numbered ${n}`);
+}
+
 modules.forEach((m,i) => {
   const b = document.createElement('button');
   b.className = 'sw-btn' + (i===0 ? ' active' : '');
@@ -284,6 +295,7 @@ function showSignup() {
 window.showSignup = showSignup;
 window.render = render;
 window.openModule = openModule;
+window.openModuleByNumber = openModuleByNumber;
 window.vwDrillWords = drillWords;
 
 const m0html = await fetch('modules/m0-sound-like-spanish.html').then(r => r.text());

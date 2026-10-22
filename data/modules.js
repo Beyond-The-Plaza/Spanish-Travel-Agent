@@ -12,7 +12,12 @@ export const modules = [
      protected lesson function. `stepLabels` is static so locked dots and "1 of N" render offline. */
   { n:2, title:"Going Places", track:"Beginner", level:"A1–A2", students:"All students", access:"paid", slug:"m2-going-places",
     preview:"modules/preview/m2-going-places.html",
-    stepLabels:["Overview · 1 of 6","IR · 2 of 6","Near future · 3 of 6","A + el = al · 4 of 6","Questions · 5 of 6","Practice · 6 of 6"] },
+    stepLabels:["Overview · 1 of 6","IR · 2 of 6","Near future · 3 of 6","A + el = al · 4 of 6","Where to? · 5 of 6","Practice · 6 of 6"] },
+  /* No pre-existing page to preserve here (unlike M2/M4), so step 1 is the spec's own
+     first step — no added "Overview" step, matching its own 6-step count. */
+  { n:3, title:"What, Where, Why?", track:"Beginner", level:"A1–A2", students:"All students", access:"paid", slug:"m3-what-where-why",
+    preview:"modules/preview/m3-what-where-why.html",
+    stepLabels:["Question words · 1 of 6","Why & because · 2 of 6","Make a question · 3 of 6","Tense map · 4 of 6","Answers · 5 of 6","Practice · 6 of 6"] },
   { n:4, title:"A Day in the Life", track:"Beginner", level:"A2", students:"All students", access:"paid", slug:"m4-day-in-life",
     preview:"modules/preview/m4-day-in-life.html",
     stepLabels:["Overview · 1 of 7","Reflexives · 2 of 7","Morning · 3 of 7","Afternoon · 4 of 7","Evening · 5 of 7","Word families · 6 of 7","Practice · 7 of 7"] },
