@@ -1,0 +1,44 @@
+<!-- MODULE: M5 — Your First Real Conversations · Step 1 (public preview, static) -->
+<!--
+  Ships with the static site and renders with no Supabase calls. Same situation
+  as M3: no pre-existing page to preserve, so step 1 is the spec's own first
+  step — not an added "Overview". Steps 2–6 are protected: they load from the
+  private course-modules bucket via the course-lesson function (see js/app.js).
+-->
+
+    <div class="step-panel active" id="m5-step-0">
+      <div class="hook-block">
+        <div class="hook-label">The hook</div>
+        <div class="hook-text">"Every real conversation opens the same way: who you are, and how you can help. Nail the opener and the rest follows."</div>
+      </div>
+      <div>
+        <div class="section-heading">Opening lines</div>
+        <table class="dip-table">
+          <thead>
+            <tr><th>Spanish</th><th>English</th><th>When</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play Hola, me llamo Jeff." onclick="vwSpeak('Hola, me llamo Jeff.', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>Hola, me llamo Jeff.</span></td><td>Hi, my name is Jeff.</td><td>Opening</td></tr>
+            <tr><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play ¿Cómo te llamas?" onclick="vwSpeak('¿Cómo te llamas?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Cómo te llamas?</span></td><td>What's your name?</td><td>Asking</td></tr>
+            <tr><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play Es un gusto conocerte." onclick="vwSpeak('Es un gusto conocerte.', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>Es un gusto conocerte.</span></td><td>It's a pleasure to meet you.</td><td>After names</td></tr>
+            <tr><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play example" onclick="vwSpeak('Soy el instructor de esta escuela de karate.', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>Soy el instructor de esta escuela de karate.</span></td><td>I'm the instructor at this karate school.</td><td>Make your role clear</td></tr>
+            <tr><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play example" onclick="vwSpeak('Buenos días. Buenas tardes.', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>Buenos días / Buenas tardes</span></td><td>Good morning / Good afternoon</td><td>With strangers and vendors</td></tr>
+            <tr><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play ¿Con qué te puedo ayudar?" onclick="vwSpeak('¿Con qué te puedo ayudar?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Con qué te puedo ayudar?</span></td><td>How can I help you?</td><td>Offering help (tú)</td></tr>
+            <tr><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play ¿Con qué le puedo ayudar?" onclick="vwSpeak('¿Con qué le puedo ayudar?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Con qué le puedo ayudar?</span></td><td>How can I help you?</td><td>Offering help (usted)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="section-heading">Tutor tips</div>
+        <div class="concept-list">
+          <div class="concept-item"><div class="concept-dot"></div><span>Say your role early. <em>Soy el instructor</em> uses SER (identity), a Module 1 callback.</span></div>
+          <div class="concept-item"><div class="concept-dot"></div><span><strong>Tú vs. usted</strong>: the karate instructor is friendly (<em>te</em>); a market vendor talking to a stranger uses <em>usted</em> (<em>le</em>). Match whoever is talking to you.</span></div>
+          <div class="concept-item"><div class="concept-dot"></div><span><em>Hay alguien…</em> = Is there someone… · <em>Hay algo…</em> = Is there something…</span></div>
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="nav-btn" disabled>← Prev</button>
+        <span class="nav-counter">1 / 6</span>
+        <button class="nav-btn" onclick="goStep(1)">Next: Want &amp; have →</button>
+      </div>
+    </div>

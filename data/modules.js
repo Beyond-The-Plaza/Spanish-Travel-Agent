@@ -21,6 +21,11 @@ export const modules = [
   { n:4, title:"A Day in the Life", track:"Beginner", level:"A2", students:"All students", access:"paid", slug:"m4-day-in-life",
     preview:"modules/preview/m4-day-in-life.html",
     stepLabels:["Overview · 1 of 7","Reflexives · 2 of 7","Morning · 3 of 7","Afternoon · 4 of 7","Evening · 5 of 7","Word families · 6 of 7","Practice · 7 of 7"] },
+  /* No pre-existing page to preserve (same as M3), so step 1 is the spec's own
+     first step — no added "Overview" step. */
+  { n:5, title:"Your First Real Conversations", track:"Beginner", level:"A2", students:"Beginner · Mickey", access:"paid", slug:"m5-first-conversations",
+    preview:"modules/preview/m5-first-conversations.html",
+    stepLabels:["Meet & greet · 1 of 6","Want & have · 2 of 6","Signing up · 3 of 6","Numbers · 4 of 6","Market & café · 5 of 6","Break the script · 6 of 6"] },
   { n:8, title:"Para vs Por", track:"Intermediate", level:"B1–B2", students:"Course members", access:"paid", slug:"m8-para-vs-por" },
   { n:12, title:"The Subjunctive", track:"Advanced", level:"B2", students:"Course members", access:"paid", slug:"m12-subjunctive" },
   { n:16, title:"Poetry, Song & Culture", track:"Advanced", level:"C1", students:"Course members", access:"paid", slug:"m16-poetry-song-culture" }

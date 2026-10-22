@@ -159,3 +159,21 @@
   background: var(--gold); opacity: .1;
 }
 .popup--m4 .popup-pill { background: rgba(201,168,76,.16); color: var(--gold); border: 1px solid rgba(201,168,76,.4); }
+
+/* M5 · You went off-script. */
+.popup--m5 .popup-hero {
+  background: linear-gradient(160deg, #F5D5CC 0%, #F5F0E8 55%);
+  color: var(--charcoal);
+}
+.popup--m5 .popup-hero::before {
+  content: ''; position: absolute; left: -36px; bottom: -36px;
+  width: 130px; height: 130px; border-radius: 50%;
+  background: var(--terracotta); opacity: .12;
+}
+.popup--m5 .popup-hero::after {
+  content: ''; position: absolute; right: 16px; top: -24px;
+  width: 64px; height: 64px; border-radius: 50%;
+  border: 1px solid rgba(61,74,46,.22);
+}
+.popup--m5 .popup-pill { background: rgba(196,97,74,.14); color: var(--terracotta); border: 1px solid rgba(196,97,74,.32); }
+.popup--m5 .popup-title { color: var(--olive); }

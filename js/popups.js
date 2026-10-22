@@ -20,7 +20,11 @@ const POPUP_ROUTES = {
   // gets inserted, which previously broke these silently.
   m2: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModuleByNumber(3); } },
   m3: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModuleByNumber(4); } },
-  m4: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModuleByNumber(8); } },
+  m4: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModuleByNumber(5); } },
+  // Stepping-stone: M6 doesn't exist yet, so M5 points straight at M8 for
+  // now (the same stepping-stone M4's route just had). Correct this to 6
+  // once M6 ships.
+  m5: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModuleByNumber(8); } },
 };
 
 window.POPUP_ROUTES = POPUP_ROUTES;
