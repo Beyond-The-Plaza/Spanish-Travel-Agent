@@ -292,7 +292,7 @@
   .conj-table th { font-family: var(--font-mono); font-size: 7.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); font-weight: 400; padding: 4px 3px; text-align: left; border-bottom: 1px solid rgba(61,74,46,.18); vertical-align: bottom; }
   .conj-table th small { display: block; font-size: 6.5px; color: rgba(122,112,104,.7); letter-spacing: .02em; }
   .conj-table td { font-family: var(--font-display); font-size: 12.5px; color: var(--charcoal); padding: 3.5px 3px; border-bottom: 1px solid rgba(61,74,46,.06); white-space: nowrap; }
-  .conj-table td.pron, .conj-table th.pron { font-family: var(--font-mono); font-size: 8px; color: var(--muted); width: 34px; }
+  .conj-table td.pron, .conj-table th.pron { font-family: var(--font-mono); font-size: 8px; color: var(--muted); width: 48px; padding-right: 6px; }
   .conj-table .col-prev { color: rgba(28,28,26,.42); }
   .conj-table th.col-prev { color: rgba(122,112,104,.6); }
   .conj-table tr:last-child td { border-bottom: none; }
@@ -433,6 +433,43 @@
   /* Multiple labelled vocab groups per step (M4: "Places", "Food", "Activities"…) */
   .vocab-group + .vocab-group { margin-top: 8px; }
   .vocab-group-label { display: block; font-family: var(--font-mono); font-size: 8px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+
+  /* M6's verb quiz (js/verb-quiz.js) — one-at-a-time typed drill, then the
+     reference table (below, hidden until the quiz is done). */
+  .vq-card { background: var(--white); border: 1px solid rgba(61,74,46,.12); border-radius: 6px; padding: 1rem 1.1rem; }
+  .vq-progress { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .vq-prompt { font-size: 13px; line-height: 1.5; color: var(--charcoal); margin-bottom: 12px; }
+  .vq-input-row { display: flex; gap: 8px; }
+  .vq-input { flex: 1; min-width: 0; font-family: var(--font-display); font-style: italic; font-size: 14px; padding: 9px 11px; border: 1px solid rgba(61,74,46,.25); border-radius: 3px; background: var(--cream); color: var(--charcoal); }
+  .vq-input:disabled { opacity: .7; }
+  /* Placeholder matches the page's mono micro-label system instead of the
+     italic Spanish-text styling the typed answer itself uses. */
+  .vq-input::placeholder { font-family: var(--font-mono); font-style: normal; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); opacity: 1; }
+  .vq-submit { font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; background: var(--olive); color: var(--white); border: 0; border-radius: 3px; padding: 0 16px; cursor: pointer; white-space: nowrap; }
+  .vq-feedback { min-height: 1.4em; margin-top: 10px; font-size: 12px; }
+  .vq-feedback.vq-correct { color: var(--olive); }
+  .vq-feedback.vq-incorrect { color: var(--terracotta); }
+  .vq-summary { text-align: center; }
+  .vq-score { font-family: var(--font-display); font-weight: 700; font-size: 28px; color: var(--olive); }
+  .vq-score span { font-family: var(--font-mono); font-size: 11px; font-weight: 400; color: var(--muted); }
+  .vq-redo-btn { margin-top: 10px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; background: none; border: 1px solid rgba(196,97,74,.4); color: var(--terracotta); border-radius: 3px; padding: 8px 14px; cursor: pointer; }
+
+
+  /* Original ink-line doodles (M6 steps 3–5) — same brand-only, not-based-
+     on-any-copyrighted-character convention as M2's "four paths" figure. */
+  .doodle { margin: 0; text-align: center; }
+  .doodle svg { display: block; width: 100%; max-width: 320px; height: auto; margin: 0 auto; }
+  .doodle-ink { fill: none; stroke: var(--charcoal); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .doodle-fill { fill: var(--charcoal); }
+  .doodle-accent { fill: none; stroke: var(--terracotta); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1 6; }
+  .doodle-tape { fill: none; stroke: var(--terracotta); stroke-width: 2.5; }
+  .doodle-confetti { fill: var(--gold); }
+  .doodle-medal { fill: var(--gold); }
+  .doodle-ribbon { fill: var(--terracotta); }
+  .doodle-caption { margin-top: 8px; font-family: var(--font-display); font-style: italic; font-size: 12px; color: var(--olive); line-height: 1.4; }
+  .doodle-caption + .doodle-caption { margin-top: 3px; }
+  .doodle-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; fill: var(--terracotta); }
+  .doodle-caption-tag { font-family: var(--font-mono); font-style: normal; font-size: 8.5px; letter-spacing: .04em; color: var(--muted); }
 
   @media (max-width: 680px) {
     .conj-table td, .conj-table th { font-size: 11px; }

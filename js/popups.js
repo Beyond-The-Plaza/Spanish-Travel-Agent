@@ -21,10 +21,11 @@ const POPUP_ROUTES = {
   m2: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModuleByNumber(3); } },
   m3: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModuleByNumber(4); } },
   m4: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModuleByNumber(5); } },
-  // Stepping-stone: M6 doesn't exist yet, so M5 points straight at M8 for
-  // now (the same stepping-stone M4's route just had). Correct this to 6
-  // once M6 ships.
-  m5: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModuleByNumber(8); } },
+  m5: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModuleByNumber(6); } },
+  // Stepping-stone: M7 doesn't exist yet, so M6 points straight at M8 for
+  // now (the same stepping-stone M5's route just had). Correct this to 7
+  // once M7 ships.
+  m6: { reviewFn: () => hidePopup(), nextFn: () => { hidePopup(); window.openModuleByNumber(8); } },
 };
 
 window.POPUP_ROUTES = POPUP_ROUTES;

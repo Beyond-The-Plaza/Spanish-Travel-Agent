@@ -20,6 +20,8 @@ const MODULE_BG = {
   3:  'assets/m3-hero.jpg',
   4:  'assets/m4-hero.jpg',
   5:  'assets/m5-hero.jpg',
+  6:  'assets/m6-hero.jpg',
+  7:  'assets/m7-hero.jpg',
   8:  'assets/m8-hero.jpg',
   12: 'assets/m12-hero.jpg',
   16: 'assets/m16-hero.jpg',
