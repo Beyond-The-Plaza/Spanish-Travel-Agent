@@ -73,17 +73,67 @@
     _voiceCache[lang] = chosen;
     return chosen;
   }
+  /* Optional voice gender for dialogue (vwSpeak's 3rd argument: 'male' | 'female').
+     The Web Speech API does not report gender, so we decide from voice names:
+       1. VOICE_GENDER_EXACT: voices we know for certain (edit these after listening).
+       2. VOICE_GENDER_NAMES: common Spanish voice names on Windows/macOS/Android/iOS.
+       3. Otherwise the two speakers still get DIFFERENT Spanish voices when the device
+          has 2+ of them (first one = male, last one = female).
+     Only with a single Spanish voice do we fall back to a pitch shift, which many
+     voices (including Google's) ignore, so there the speakers may sound alike. */
+  var VOICE_GENDER_EXACT = {
+    female: ['google español de estados unidos'],
+    male:   ['google español']
+  };
+  var VOICE_GENDER_NAMES = {
+    female: ['helena', 'laura', 'sabina', 'elvira', 'dalia', 'elena', 'paloma', 'lupe', 'mónica', 'monica', 'paulina', 'marisol', 'lucía', 'lucia', 'camila'],
+    male:   ['pablo', 'raul', 'raúl', 'álvaro', 'alvaro', 'jorge', 'juan', 'diego', 'carlos', 'enrique', 'miguel', 'tomás', 'tomas', 'alberto', 'jaime']
+  };
+  var GENDER_PITCH = { male: 0.7, female: 1.25 };
+  var _genderCache = {};
+
+  function findByGender(pool, gender) {
+    var exact = VOICE_GENDER_EXACT[gender] || [];
+    var byExact = pool.filter(function (v) { return exact.indexOf(v.name.toLowerCase()) !== -1; })[0];
+    if (byExact) return byExact;
+    var names = VOICE_GENDER_NAMES[gender] || [];
+    return pool.filter(function (v) {
+      var n = v.name.toLowerCase();
+      return names.some(function (name) { return n.indexOf(name) !== -1; });
+    })[0] || null;
+  }
+
+  function pickGenderVoice(lang, gender) {
+    var key = lang + '|' + gender;
+    if (_genderCache[key]) return _genderCache[key];
+    var voices = speechSynthesis.getVoices();
+    if (!voices.length) return null;
+    var base = lang.split('-')[0];
+    var pool = voices.filter(function (v) { return v.lang === lang || v.lang.indexOf(base) === 0; });
+    var found = findByGender(pool, gender);
+    if (!found && pool.length > 1) {
+      // No name match: still give the two speakers different voices.
+      var other = findByGender(pool, gender === 'male' ? 'female' : 'male');
+      var candidates = pool.filter(function (v) { return v !== other; });
+      found = gender === 'male' ? candidates[0] : candidates[candidates.length - 1];
+    }
+    if (found) _genderCache[key] = found;
+    return found || null;
+  }
+
   // getVoices() populates asynchronously in some browsers; refresh when it does.
-  if (hasSynth) speechSynthesis.addEventListener('voiceschanged', function () { _voiceCache = {}; });
+  if (hasSynth) speechSynthesis.addEventListener('voiceschanged', function () { _voiceCache = {}; _genderCache = {}; });
 
   /* ── Core synthesis helper ── */
-  function speak(text, lang, rate, activeEl) {
+  function speak(text, lang, rate, activeEl, gender) {
     if (!hasSynth) return;
     speechSynthesis.cancel();
     var u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
     u.rate = rate;
-    var voice = pickVoice(lang);
+    var voice = gender ? pickGenderVoice(lang, gender) : null;
+    if (gender && !voice) u.pitch = GENDER_PITCH[gender] || 1;
+    if (!voice) voice = pickVoice(lang);
     if (voice) u.voice = voice;
     if (activeEl) {
       activeEl.classList.add('vw-playing');
@@ -174,8 +224,8 @@
   };
 
   /* ── Steps 3 & 4: Generic Spanish playback ── */
-  window.vwSpeak = function (text, rate) {
-    speak(text, 'es-ES', rate || 0.85, null);
+  window.vwSpeak = function (text, rate, gender) {
+    speak(text, 'es-ES', rate || 0.85, null, gender);
   };
 
   /* ── Feedback helper ── */

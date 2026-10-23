@@ -119,3 +119,74 @@
 }
 .popup--m1 .popup-pill { background: rgba(196,97,74,.12); color: var(--terracotta); border: 1px solid rgba(196,97,74,.3); }
 .popup--m1 .popup-title { color: var(--olive); }
+
+/* M2 · Through the archway. */
+.popup--m2 .popup-hero {
+  background: linear-gradient(160deg, #F0E0A8 0%, #F5F0E8 60%);
+  color: var(--charcoal);
+}
+.popup--m2 .popup-hero::before {
+  content: ''; position: absolute; left: -40px; top: -40px;
+  width: 130px; height: 130px; border-radius: 50%;
+  background: var(--gold); opacity: .14;
+}
+.popup--m2 .popup-pill { background: rgba(201,168,76,.18); color: #8a6d1f; border: 1px solid rgba(201,168,76,.4); }
+.popup--m2 .popup-title { color: var(--olive); }
+
+/* M3 · A map made of questions. */
+.popup--m3 .popup-hero {
+  background: linear-gradient(160deg, #E8E3D8 0%, #F5F0E8 60%);
+  color: var(--charcoal);
+}
+.popup--m3 .popup-hero::before {
+  content: ''; position: absolute; right: -36px; bottom: -36px;
+  width: 120px; height: 120px; border-radius: 50%;
+  background: var(--olive); opacity: .08;
+}
+.popup--m3 .popup-hero::after {
+  content: ''; position: absolute; left: 20px; top: -20px;
+  width: 60px; height: 60px; border-radius: 50%;
+  border: 1px solid rgba(196,97,74,.3);
+}
+.popup--m3 .popup-pill { background: rgba(61,74,46,.1); color: var(--olive); border: 1px solid rgba(61,74,46,.28); }
+.popup--m3 .popup-title { color: var(--olive); }
+
+/* M4 · Tiles of a life. */
+.popup--m4 .popup-hero { background: var(--olive); color: var(--white); }
+.popup--m4 .popup-hero::before {
+  content: ''; position: absolute; right: -50px; top: -50px;
+  width: 150px; height: 150px; border-radius: 50%;
+  background: var(--gold); opacity: .1;
+}
+.popup--m4 .popup-pill { background: rgba(201,168,76,.16); color: var(--gold); border: 1px solid rgba(201,168,76,.4); }
+
+/* M5 · You went off-script. */
+.popup--m5 .popup-hero {
+  background: linear-gradient(160deg, #F5D5CC 0%, #F5F0E8 55%);
+  color: var(--charcoal);
+}
+.popup--m5 .popup-hero::before {
+  content: ''; position: absolute; left: -36px; bottom: -36px;
+  width: 130px; height: 130px; border-radius: 50%;
+  background: var(--terracotta); opacity: .12;
+}
+.popup--m5 .popup-hero::after {
+  content: ''; position: absolute; right: 16px; top: -24px;
+  width: 64px; height: 64px; border-radius: 50%;
+  border: 1px solid rgba(61,74,46,.22);
+}
+.popup--m5 .popup-pill { background: rgba(196,97,74,.14); color: var(--terracotta); border: 1px solid rgba(196,97,74,.32); }
+.popup--m5 .popup-title { color: var(--olive); }
+
+/* M6 · You climbed the ladder. (first Intermediate-track module) */
+.popup--m6 .popup-hero {
+  background: linear-gradient(160deg, #E0E6D8 0%, #F5F0E8 55%);
+  color: var(--charcoal);
+}
+.popup--m6 .popup-hero::before {
+  content: ''; position: absolute; right: -40px; bottom: -40px;
+  width: 140px; height: 140px; border-radius: 50%;
+  background: var(--olive-mid); opacity: .12;
+}
+.popup--m6 .popup-pill { background: rgba(61,74,46,.12); color: var(--olive); border: 1px solid rgba(61,74,46,.3); }
+.popup--m6 .popup-title { color: var(--olive); }

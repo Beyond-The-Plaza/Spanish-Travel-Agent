@@ -1,0 +1,55 @@
+<!-- MODULE: M3 — What, Where, Why? · Step 1 (public preview, static) -->
+<!--
+  Ships with the static site and renders with no Supabase calls. Unlike M2/M4,
+  there was no pre-existing page to preserve for this module, so step 1 is the
+  spec's own first step (not a separate "Overview") — matching the spec's own
+  6-step count. Steps 2–6 are protected: they load from the private
+  course-modules bucket via the course-lesson function (see js/app.js).
+-->
+
+    <div class="step-panel active" id="m3-step-0">
+      <div class="hook-block">
+        <div class="hook-label">The hook</div>
+        <div class="hook-text">"Six question words unlock any conversation. Learn these and you can ask anything."</div>
+      </div>
+      <div>
+        <div class="section-heading">The six question words</div>
+        <div class="hook-block" style="border-left-color:var(--olive-mid)">
+          <div class="hook-text">Every question word carries an accent mark when you're asking. That little tilde is your signal: this is a question.</div>
+        </div>
+        <table class="dip-table">
+          <thead>
+            <tr><th>Spanish</th><th>English</th><th>Example</th><th>English</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play ¿Qué?" onclick="vwSpeak('¿Qué?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Qué?</span></td><td>What?</td><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play example" onclick="vwSpeak('¿Qué vas a hacer?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Qué vas a hacer?</span></td><td>What are you going to do?</td></tr>
+            <tr><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play ¿Dónde?" onclick="vwSpeak('¿Dónde?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Dónde?</span></td><td>Where?</td><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play example" onclick="vwSpeak('¿Dónde está la biblioteca?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Dónde está la biblioteca?</span></td><td>Where is the library?</td></tr>
+            <tr><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play ¿Cuándo?" onclick="vwSpeak('¿Cuándo?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Cuándo?</span></td><td>When?</td><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play example" onclick="vwSpeak('¿Cuándo vas a ir?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Cuándo vas a ir?</span></td><td>When are you going to go?</td></tr>
+            <tr><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play ¿Por qué?" onclick="vwSpeak('¿Por qué?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Por qué?</span></td><td>Why?</td><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play example" onclick="vwSpeak('¿Por qué vas a la biblioteca?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Por qué vas a la biblioteca?</span></td><td>Why are you going to the library?</td></tr>
+            <tr><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play ¿Cuál?" onclick="vwSpeak('¿Cuál?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Cuál?</span></td><td>Which? / What?</td><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play example" onclick="vwSpeak('¿Cuál es tu color favorito?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Cuál es tu color favorito?</span></td><td>What's your favourite colour?</td></tr>
+            <tr><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play ¿Cuánto?" onclick="vwSpeak('¿Cuánto?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Cuánto?</span></td><td>How much?</td><td><span class="dip-eg-cell"><button class="vw-speak-btn" type="button" aria-label="Play example" onclick="vwSpeak('¿Cuánto cuesta?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Cuánto cuesta?</span></td><td>How much does it cost?</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="section-heading">Bonus</div>
+        <div class="vocab-strip">
+          <span class="vocab-pill vw-audio-pill"><button class="vw-speak-btn" type="button" aria-label="Play ¿Quién?" onclick="vwSpeak('¿Quién?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Quién? (who)</span>
+          <span class="vocab-pill vw-audio-pill"><button class="vw-speak-btn" type="button" aria-label="Play ¿A dónde?" onclick="vwSpeak('¿A dónde?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿A dónde? (where to)</span>
+          <span class="vocab-pill vw-audio-pill"><button class="vw-speak-btn" type="button" aria-label="Play ¿Cómo?" onclick="vwSpeak('¿Cómo?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Cómo? (how)</span>
+          <span class="vocab-pill vw-audio-pill"><button class="vw-speak-btn" type="button" aria-label="Play ¿Cuántos?" onclick="vwSpeak('¿Cuántos?', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>¿Cuántos? (how many)</span>
+        </div>
+      </div>
+      <div>
+        <div class="section-heading">Tutor tips</div>
+        <div class="concept-list">
+          <div class="concept-item"><div class="concept-dot"></div><span><em>¿A dónde?</em> is for movement (Module 2): <em>¿A dónde vas?</em> Plain <em>¿Dónde?</em> is for location: <em>¿Dónde estás?</em></span></div>
+          <div class="concept-item"><div class="concept-dot"></div><span><em>¿Cuál es tu…?</em> is how Spanish asks "What is your…?" when picking from options: <em>¿Cuál es tu clima favorito?</em></span></div>
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="nav-btn" disabled>← Prev</button>
+        <span class="nav-counter">1 / 6</span>
+        <button class="nav-btn" onclick="goStep(1)">Next: Why &amp; because →</button>
+      </div>
+    </div>

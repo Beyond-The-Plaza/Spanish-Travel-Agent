@@ -1,0 +1,53 @@
+<!-- MODULE: M6 — Verb Conjugation Mastery · Step 1 (public preview, static) -->
+<!--
+  Ships with the static site and renders with no Supabase calls. Same situation
+  as M3/M5: no pre-existing page to preserve, so step 1 is the spec's own first
+  step — not an added "Overview". Steps 2–6 are protected: they load from the
+  private course-modules bucket via the course-lesson function (see js/app.js).
+-->
+
+    <div class="step-panel active" id="m6-step-0">
+      <div class="hook-block">
+        <div class="hook-label">The hook</div>
+        <div class="hook-text">"You don't memorize Spanish verbs one by one. You learn the ending patterns once, then every new verb is free."</div>
+      </div>
+      <div>
+        <div class="section-heading">Present tense endings</div>
+        <table class="conj-table">
+          <thead>
+            <tr><th class="pron"></th><th>-AR (caminar)</th><th>-ER (comer)</th><th>-IR (vivir)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="pron">yo</td><td>camino</td><td>como</td><td>vivo</td></tr>
+            <tr><td class="pron">tú</td><td>caminas</td><td>comes</td><td>vives</td></tr>
+            <tr><td class="pron">él/ella</td><td>camina</td><td>come</td><td>vive</td></tr>
+            <tr><td class="pron">nos.</td><td>caminamos</td><td>comemos</td><td>vivimos</td></tr>
+            <tr><td class="pron">vos.</td><td>camináis</td><td>coméis</td><td>vivís</td></tr>
+            <tr><td class="pron">ellos</td><td>caminan</td><td>comen</td><td>viven</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="section-heading">Good to know</div>
+        <div class="concept-list">
+          <div class="concept-item"><div class="concept-dot"></div><span>Chop off -ar / -er / -ir, then add the ending for who's doing it.</span></div>
+          <div class="concept-item"><div class="concept-dot"></div><span>-ER and -IR are twins in the present. They only split at <em>nosotros</em> and <em>vosotros</em>.</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="section-heading">Your six practice verbs</div>
+        <div class="vocab-strip">
+          <span class="vocab-pill vw-audio-pill"><button class="vw-speak-btn" type="button" aria-label="Play caminar" onclick="vwSpeak('caminar', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>caminar (walk)</span>
+          <span class="vocab-pill vw-audio-pill"><button class="vw-speak-btn" type="button" aria-label="Play cantar" onclick="vwSpeak('cantar', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>cantar (sing)</span>
+          <span class="vocab-pill vw-audio-pill"><button class="vw-speak-btn" type="button" aria-label="Play correr" onclick="vwSpeak('correr', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>correr (run)</span>
+          <span class="vocab-pill vw-audio-pill"><button class="vw-speak-btn" type="button" aria-label="Play comer" onclick="vwSpeak('comer', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>comer (eat)</span>
+          <span class="vocab-pill vw-audio-pill"><button class="vw-speak-btn" type="button" aria-label="Play escribir" onclick="vwSpeak('escribir', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>escribir (write)</span>
+          <span class="vocab-pill vw-audio-pill"><button class="vw-speak-btn" type="button" aria-label="Play vivir" onclick="vwSpeak('vivir', 0.85)"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 5v4h2l3 2.5V2.5L4 5z" fill="currentColor"/><path d="M9 4.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>vivir (live)</span>
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="nav-btn" disabled>← Prev</button>
+        <span class="nav-counter">1 / 6</span>
+        <button class="nav-btn" onclick="goStep(1)">Next: Verb forms →</button>
+      </div>
+    </div>
