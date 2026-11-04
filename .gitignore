@@ -15,3 +15,6 @@ supabase/.branches/
 .DS_Store
 Thumbs.db
 *.log
+
+# Claude Code personal overrides (per-user MCP server approvals, etc.)
+.claude/settings.local.json

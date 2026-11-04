@@ -1,5 +1,7 @@
 const crypto = require('crypto');
 
+const SIGNATURE_TOLERANCE_SECONDS = 300;
+
 function json(statusCode, body) {
   return { statusCode, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) };
 }
@@ -60,12 +62,17 @@ async function hasCourseAccess(userId) {
 
 function stripeSignatureIsValid(payload, signature) {
   const secret = required('STRIPE_WEBHOOK_SECRET');
-  const parts = Object.fromEntries((signature || '').split(',').map((item) => item.split('=')));
-  if (!parts.t || !parts.v1) return false;
-  const expected = crypto.createHmac('sha256', secret).update(`${parts.t}.${payload}`, 'utf8').digest('hex');
-  const actual = Buffer.from(parts.v1);
-  const expectedBuffer = Buffer.from(expected);
-  return actual.length === expectedBuffer.length && crypto.timingSafeEqual(expectedBuffer, actual);
+  // --- START webhook signature hardening ---
+  const parts = (signature || '').split(',').map((item) => item.split('='));
+  const timestamp = parts.find(([key]) => key === 't')?.[1];
+  // Stripe sends one v1 per active signing secret, so there can be several while a secret is rolled.
+  const candidates = parts.filter(([key]) => key === 'v1').map(([, value]) => Buffer.from(value || ''));
+  if (!timestamp || !candidates.length) return false;
+  // Reject old signatures so a captured request can't be replayed later.
+  if (Math.abs(Date.now() / 1000 - Number(timestamp)) > SIGNATURE_TOLERANCE_SECONDS) return false;
+  const expected = Buffer.from(crypto.createHmac('sha256', secret).update(`${timestamp}.${payload}`, 'utf8').digest('hex'));
+  return candidates.some((actual) => actual.length === expected.length && crypto.timingSafeEqual(expected, actual));
+  // --- END webhook signature hardening ---
 }
 
 module.exports = { json, unavailable, BackendUnavailableError, required, authenticatedUser, supabase, hasCourseAccess, stripeSignatureIsValid };

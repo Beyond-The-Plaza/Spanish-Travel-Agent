@@ -3,6 +3,8 @@
   const config = window.BTP_COURSE_CONFIG || {};
   let client = null;
   let entitlement = { loaded: false, paid: false };
+  const CHECKOUT_POLL_ATTEMPTS = 10;
+  const CHECKOUT_POLL_MS = 3000;
 
   function configured() {
     return Boolean(config.supabaseUrl && config.supabaseAnonKey && window.supabase);
@@ -67,24 +69,34 @@
       throw new Error('Checkout is not available on this deployment yet. Publish this branch through Netlify, where the secure payment function can run.');
     }
     const data = await response.json();
+    if (response.status === 409) { await refreshEntitlement(); showPaywall(); return; }
     if (!response.ok) throw new Error(data.error || 'Unable to start checkout.');
     window.location.assign(data.url);
   }
 
-  function showPaywall() {
+  function openModal(title, body) {
     const existing = document.getElementById('course-access-modal');
     if (existing) existing.remove();
+    const modal = document.createElement('div');
+    modal.id = 'course-access-modal';
+    modal.className = 'course-access';
+    modal.innerHTML = `<div class="course-access__scrim" data-course-action="close"></div><section class="course-access__card" role="dialog" aria-modal="true" aria-labelledby="course-access-title"><button class="course-access__close" aria-label="Close" data-course-action="close">×</button><div class="course-access__eyebrow">Beyond the Plaza</div><h2 id="course-access-title">${title}</h2>${body}<p class="course-access__message" aria-live="polite"></p></section>`;
+    document.body.appendChild(modal);
+    return modal;
+  }
+
+  async function showPaywall() {
+    if (!entitlement.loaded) await refreshEntitlement();
+    if (entitlement.paid) return openModal('You’re in', '<p>You have full access to every module.</p>');
+    // Can't tell whether they've paid, so never offer a purchase here.
+    if (entitlement.unavailable) return openModal('Temporarily unavailable', '<p>We can’t reach the course service right now. Please try again shortly.</p>');
     const signedIn = entitlement.signedIn;
     const body = signedIn
       ? `<p>Your account is ready. Unlock the complete course whenever you are.</p>
          <button class="course-access__primary" data-course-action="checkout">Unlock full course</button>`
       : `<p>Enter your email and we’ll send a secure sign-in link. Your progress and access stay with you.</p>
          <form data-course-action="magic-link"><label for="course-email">Email address</label><input id="course-email" type="email" required placeholder="you@example.com"><button class="course-access__primary" type="submit">Continue</button></form>`;
-    const modal = document.createElement('div');
-    modal.id = 'course-access-modal';
-    modal.className = 'course-access';
-    modal.innerHTML = `<div class="course-access__scrim" data-course-action="close"></div><section class="course-access__card" role="dialog" aria-modal="true" aria-labelledby="course-access-title"><button class="course-access__close" aria-label="Close" data-course-action="close">×</button><div class="course-access__eyebrow">Beyond the Plaza</div><h2 id="course-access-title">Unlock the full course</h2>${body}<p class="course-access__message" aria-live="polite"></p></section>`;
-    document.body.appendChild(modal);
+    const modal = openModal('Unlock the full course', body);
     modal.addEventListener('click', async (event) => {
       const action = event.target.closest('[data-course-action]')?.dataset.courseAction;
       if (!action) return;
@@ -103,6 +115,25 @@
         message.textContent = 'Check your inbox for your sign-in link.';
       } catch (error) { message.textContent = error.message; }
     });
+  }
+
+  /* Access is granted by the Stripe webhook, which can land a few seconds after the
+     customer returns, so wait for it rather than offering the purchase again. */
+  async function handleCheckoutReturn() {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('checkout');
+    if (!status) return;
+    params.delete('checkout');
+    const query = params.toString();
+    window.history.replaceState(null, '', window.location.pathname + (query ? `?${query}` : '') + window.location.hash);
+    if (status !== 'success') return;
+    openModal('Thank you!', '<p>Confirming your payment…</p>');
+    for (let attempt = 0; attempt < CHECKOUT_POLL_ATTEMPTS; attempt += 1) {
+      await refreshEntitlement();
+      if (entitlement.paid || entitlement.signedIn === false) return showPaywall();
+      await new Promise((resolve) => setTimeout(resolve, CHECKOUT_POLL_MS));
+    }
+    openModal('Thank you!', '<p>Your payment is still being confirmed. Your access will appear here once it completes, so please check back in a few minutes.</p>');
   }
 
   async function fetchLesson(slug) {
@@ -188,10 +219,10 @@
   if (configured()) {
     getClient().auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') { forgetUser(); clearLessonCache(); }
-      return refreshEntitlement().then(() => {
-        if (new URLSearchParams(window.location.search).get('checkout') === 'success') window.courseAccess.showPaywall();
-      });
+      // Deferred: supabase-js holds its auth lock during this callback, so awaiting getSession() here can deadlock.
+      setTimeout(refreshEntitlement, 0);
     });
     refreshEntitlement();
+    handleCheckoutReturn();
   }
 }());

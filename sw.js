@@ -6,7 +6,7 @@
  * cross-origin requests (Google Fonts, React/Babel, ConvertKit CDNs)
  * pass straight through to the network.
  * ───────────────────────────────────────────────────────────── */
-const CACHE_VERSION = 'v10';
+const CACHE_VERSION = 'v11';
 const CACHE_NAME = 'btp-shell-' + CACHE_VERSION;
 
 /* Same-origin files that make up the installable app shell. */
