@@ -11,6 +11,10 @@
     --charcoal:    #1C1C1A;
     --muted:       #7A7068;
     --white:       #FFFFFF;
+    /* Trip colours, shared with the course map (outline.html): -50 tint, -600 accent, -800 dark text. */
+    --teal-50: #E1F5EE; --teal-600: #0F6E56; --teal-800: #085041;   /* Beginner */
+    --pur-50:  #EEEDFE; --pur-600:  #534AB7; --pur-800:  #3C3489;   /* Intermediate */
+    --cor-50:  #FAECE7; --cor-600:  #993C1D; --cor-800:  #712B13;   /* Advanced */
     --irr:         #CB3A2C;   /* irregular conjugation highlight (M1) */
     --font-display: 'Playfair Display', Georgia, serif;
     --font-body:    'DM Sans', sans-serif;
@@ -51,15 +55,80 @@
   .signup-unlock { display: flex; flex-direction: column; align-items: center; gap: .5rem; width: 100%; max-width: 340px; }
   .signup-unlock-sub { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 
-  .switcher { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 900px; }
-  .sw-btn {
-    font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em;
-    padding: 5px 14px; border-radius: 20px; border: 1px solid rgba(61,74,46,.25);
-    background: var(--cream); color: var(--olive); cursor: pointer;
-    transition: background .15s, color .15s, border-color .15s;
+  /* ── Module switcher:  [ ‹ ]  [ M1 — Who Are You?  ▾ ]  [ › ]  ──
+     Built in js/app.js (buildSwitcher). One row at any module count. */
+  .switcher { display: flex; justify-content: center; width: 100%; max-width: 900px; }
+  .sw-bar { display: flex; align-items: center; gap: 8px; width: 100%; max-width: 460px; }
+
+  /* Round previous / next buttons. They fade out at the first and last module. */
+  .sw-arrow {
+    flex: 0 0 auto; width: 40px; height: 40px; padding: 0; border-radius: 50%;
+    border: 1px solid rgba(61,74,46,.25); background: var(--cream); color: var(--olive);
+    font-family: var(--font-mono); font-size: 18px; line-height: 1; cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s, opacity .15s;
   }
-  .sw-btn:hover { background: rgba(61,74,46,.08); }
-  .sw-btn.active { background: var(--olive); color: var(--white); border-color: var(--olive); }
+  .sw-arrow:hover:not(:disabled) { background: var(--olive); color: var(--white); border-color: var(--olive); }
+  .sw-arrow:disabled { opacity: .3; cursor: default; }
+
+  /* The menu is the positioning anchor for the floating list below it. */
+  .sw-menu { position: relative; flex: 1; min-width: 0; }
+  /* The olive pill showing the current module. A long title is cut off with "..." rather
+     than making the bar wider than the screen. */
+  .sw-trigger {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    width: 100%; min-height: 40px; padding: 8px 16px; text-align: left; cursor: pointer;
+    background: var(--olive); color: var(--white); border: 1px solid var(--olive); border-radius: 20px;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em;
+  }
+  .sw-trigger__label { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+  .sw-trigger__num { flex-shrink: 0; color: var(--gold); }
+  /* Small dot before the module number, coloured by the module's trip. A white ring keeps it
+     visible on the olive pill. */
+  .sw-trigger__dot { flex-shrink: 0; align-self: center; width: 8px; height: 8px; border-radius: 50%; background: var(--white); box-shadow: 0 0 0 2px rgba(255,255,255,.35); }
+  .sw-trigger__dot[data-track="beginner"]     { background: #5FD1AE; }
+  .sw-trigger__dot[data-track="intermediate"] { background: #A9A3F0; }
+  .sw-trigger__dot[data-track="advanced"]     { background: #F0A58A; }
+  .sw-trigger__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sw-trigger__caret { flex-shrink: 0; font-size: 11px; transition: transform .15s; }
+  .sw-trigger[aria-expanded="true"] .sw-trigger__caret { transform: rotate(180deg); }
+  /* Visible outline for keyboard users. */
+  .sw-arrow:focus-visible, .sw-trigger:focus-visible, .sw-item:focus-visible { outline: 2px solid var(--terracotta); outline-offset: 2px; }
+
+  /* The floating list of modules. It scrolls when long, and scrolling it doesn't scroll the page behind. */
+  .sw-list {
+    position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 30;
+    max-height: min(60vh, 440px); overflow-y: auto; overscroll-behavior: contain;
+    background: var(--white); border: 1px solid rgba(61,74,46,.2); border-radius: 6px;
+    box-shadow: 0 12px 32px rgba(28,28,26,.18); padding-bottom: 4px;
+  }
+  .sw-list[hidden] { display: none; }
+  /* Trip headings: "Beginner Trip", "Intermediate Trip", "Advanced Trip". Each is a small coloured pill
+     with a dot, like the track pills on the course map. The three variables below are set per trip
+     and reused by the rows underneath. */
+  .sw-group, .sw-item { --trk-50: var(--cream); --trk-600: var(--terracotta); --trk-800: var(--charcoal); }
+  .sw-group[data-track="beginner"],     .sw-item[data-track="beginner"]     { --trk-50: var(--teal-50); --trk-600: var(--teal-600); --trk-800: var(--teal-800); }
+  .sw-group[data-track="intermediate"], .sw-item[data-track="intermediate"] { --trk-50: var(--pur-50);  --trk-600: var(--pur-600);  --trk-800: var(--pur-800); }
+  .sw-group[data-track="advanced"],     .sw-item[data-track="advanced"]     { --trk-50: var(--cor-50);  --trk-600: var(--cor-600);  --trk-800: var(--cor-800); }
+  .sw-group {
+    display: flex; align-items: center; gap: 7px; margin: 8px 10px 4px; padding: 6px 10px; border-radius: 6px;
+    background: var(--trk-50); color: var(--trk-800); border: 1px solid var(--trk-600);
+    font-family: var(--font-mono); font-size: 9px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase;
+  }
+  .sw-group::before { content: ''; flex-shrink: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--trk-600); }
+  /* One row per module: number, title (takes the spare space), level. */
+  .sw-item {
+    display: grid; grid-template-columns: 34px 1fr auto; align-items: baseline; gap: 8px;
+    width: 100%; padding: 9px 14px; border: 0; background: none; text-align: left; cursor: pointer;
+    color: var(--charcoal); font-family: var(--font-body); font-size: 13px;
+  }
+  .sw-item:hover, .sw-item:focus-visible { background: rgba(61,74,46,.06); }
+  .sw-item.active { background: var(--trk-50); font-weight: 500; }   /* the module on screen, tinted in its trip's colour */
+  .sw-item__num { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+  .sw-item.active .sw-item__num { color: var(--trk-600); }
+  .sw-item__title { min-width: 0; line-height: 1.3; }
+  .sw-item__level { font-family: var(--font-mono); font-size: 8px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  /* On touch screens, rows are at least 44px tall, the usual minimum for a finger. */
+  @media (pointer: coarse) { .sw-item { min-height: 44px; align-items: center; } }
 
   /* ── Slide shell ── */
   .slide {
@@ -485,6 +554,10 @@
      ══════════════════════════════════════════════════════════════ */
   @media (orientation: portrait) and (max-width: 900px) {
     body { padding: 1rem; gap: 1rem; }
+
+    /* Pin the module switcher so you can change modules without scrolling back up.
+       The negative margin cancels the padding so the layout doesn't shift. */
+    .switcher { position: sticky; top: 0; z-index: 20; padding: .5rem 0; margin: -.5rem 0; background: #E8E3D8; }
 
     /* The long header sub-label must wrap instead of forcing the whole page
        wider than the phone (which pushed the step-nav's Next button off-screen). */

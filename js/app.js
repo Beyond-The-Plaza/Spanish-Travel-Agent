@@ -10,6 +10,7 @@ const LOCAL_HOST = /^(localhost|127(\.\d{1,3}){3}|\[::1\])$/.test(window.locatio
 const DEV_BYPASS = LOCAL_HOST && new URLSearchParams(window.location.search).get('paywall') !== 'on';
 
 let currentStep = 0;
+let currentIndex = 0;   // module on screen right now; the switcher's prev/next arrows step from here
 const standardContentTemplate = document.getElementById('std-content').innerHTML;
 
 // Per-module background photo, keyed by module number (m.n).
@@ -229,7 +230,7 @@ function render(i) {
       `<span class="vocab-pill">${v}</span>`).join('');
   }
 
-  document.querySelectorAll('.sw-btn').forEach((b,j) => b.classList.toggle('active', j===i));
+  updateSwitcher(i);   // keep the switcher bar in step with the module on screen
   const pl = document.querySelector('.panel-left');
   pl.style.animation = 'none'; pl.offsetHeight; pl.style.animation = '';
 }
@@ -281,14 +282,126 @@ function openModuleByNumber(n) {
   else console.warn(`[app] openModuleByNumber: no module numbered ${n}`);
 }
 
-modules.forEach((m,i) => {
-  const b = document.createElement('button');
-  b.className = 'sw-btn' + (i===0 ? ' active' : '');
-  b.textContent = 'M' + m.n + ' — ' + m.title;
-  if (m.access === 'paid') b.classList.add('is-locked');
-  b.onclick = () => openModule(i);
-  switcher.appendChild(b);
-});
+/* ── Module switcher:  [ ‹ ]  [ M1 — Who Are You?  ▾ ]  [ › ] ──────────────
+   One compact bar instead of a pill per module, so it stays a single row no matter
+   how many modules there are. Tapping the middle button opens a list of every module,
+   grouped into "trips" (Beginner Trip, Intermediate Trip, Advanced Trip). The arrows
+   step to the previous or next module.
+
+   The list is built from the `modules` array in data/modules.js and grouped by each
+   module's `track` field, so a new module appears here automatically. */
+
+/* Display names for the groups. The keys are the `track` values in data/modules.js.
+   A track that isn't listed falls back to "<track> Trip". */
+const TRIP_NAMES = {
+  Beginner: 'Beginner Trip',
+  Intermediate: 'Intermediate Trip',
+  Advanced: 'Advanced Trip',
+};
+const tripName = (track) => TRIP_NAMES[track] || (track + ' Trip');
+/* The track as a lowercase word ("beginner"), used as data-track so the CSS can colour each
+   trip the same way the course map (outline.html) does. */
+const trackKey = (track) => String(track || '').toLowerCase();
+
+/* Escape text before putting it inside an HTML string, so a title can never inject markup. */
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function buildSwitcher() {
+  // Build the list: a heading each time the track changes, then one row per module.
+  // data-i is the module's position in `modules`, which is what openModule() expects.
+  let lastTrack = null;
+  const items = modules.map((m, i) => {
+    let head = '';
+    if (m.track && m.track !== lastTrack) { head = `<div class="sw-group" data-track="${esc(trackKey(m.track))}">${esc(tripName(m.track))}</div>`; lastTrack = m.track; }
+    return head +
+      `<button type="button" class="sw-item${m.access === 'paid' ? ' is-locked' : ''}" data-i="${i}" data-track="${esc(trackKey(m.track))}">` +
+        `<span class="sw-item__num">M${esc(m.n)}</span>` +
+        `<span class="sw-item__title">${esc(m.title)}</span>` +
+        `<span class="sw-item__level">${esc(m.level || '')}</span>` +   // paid modules get a padlock after this (styles/course-access.css)
+      `</button>`;
+  }).join('');
+
+  // The bar itself: previous arrow, the button that shows the current module, next arrow.
+  switcher.innerHTML =
+    `<div class="sw-bar">` +
+      `<button type="button" class="sw-arrow" id="sw-prev" aria-label="Previous module">‹</button>` +
+      `<div class="sw-menu">` +
+        `<button type="button" class="sw-trigger" id="sw-trigger" aria-expanded="false" aria-controls="sw-list" aria-label="Choose a module">` +
+          `<span class="sw-trigger__label"></span><span class="sw-trigger__caret" aria-hidden="true">▾</span>` +
+        `</button>` +
+        `<div class="sw-list" id="sw-list" hidden>${items}</div>` +
+      `</div>` +
+      `<button type="button" class="sw-arrow" id="sw-next" aria-label="Next module">›</button>` +
+    `</div>`;
+
+  const trigger = document.getElementById('sw-trigger');
+  const list = document.getElementById('sw-list');
+
+  // Open or close the list (and keep aria-expanded in sync for screen readers).
+  function setOpen(open) {
+    list.hidden = !open;
+    trigger.setAttribute('aria-expanded', String(open));
+    if (open) {
+      // Scroll so the current module sits in the middle of the visible list.
+      const cur = list.querySelector('.sw-item.active');
+      if (cur) list.scrollTop = cur.offsetTop - (list.clientHeight - cur.offsetHeight) / 2;
+    }
+  }
+
+  trigger.addEventListener('click', () => setOpen(list.hidden));
+
+  // One listener for every row: close the list, then open the chosen module.
+  list.addEventListener('click', (e) => {
+    const item = e.target.closest('.sw-item');
+    if (!item) return;
+    setOpen(false);
+    openModule(Number(item.dataset.i));
+  });
+
+  // Tapping anywhere outside the menu closes it.
+  document.addEventListener('click', (e) => {
+    if (!list.hidden && !e.target.closest('.sw-menu')) setOpen(false);
+  });
+
+  // Keyboard, only while the list is open: Escape closes it; Up/Down move through the rows.
+  document.addEventListener('keydown', (e) => {
+    if (list.hidden) return;
+    if (e.key === 'Escape') { setOpen(false); trigger.focus(); return; }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const els = [...list.querySelectorAll('.sw-item')];
+      const at = els.indexOf(document.activeElement);
+      els[Math.max(0, Math.min(els.length - 1, at + (e.key === 'ArrowDown' ? 1 : -1)))].focus();
+    }
+  });
+
+  // Previous / next arrows: one module either way, never past the first or last.
+  const step = (d) => { const n = currentIndex + d; if (n >= 0 && n < modules.length) openModule(n); };
+  document.getElementById('sw-prev').addEventListener('click', () => step(-1));
+  document.getElementById('sw-next').addEventListener('click', () => step(1));
+
+  updateSwitcher(currentIndex);
+}
+
+/* Called from render() every time the module on screen changes. */
+function updateSwitcher(i) {
+  currentIndex = i;
+  const m = modules[i];
+  // Button text: module number, then title.
+  document.querySelector('.sw-trigger__label').innerHTML =
+    `<span class="sw-trigger__dot" data-track="${esc(trackKey(m.track))}"></span>` +   // small dot in the trip's colour
+    `<span class="sw-trigger__num">M${esc(m.n)}</span><span class="sw-trigger__title">${esc(m.title)}</span>`;
+  // Highlight the current row in the list.
+  document.querySelectorAll('.sw-item').forEach((el, j) => {
+    el.classList.toggle('active', j === i);
+    if (j === i) el.setAttribute('aria-current', 'true'); else el.removeAttribute('aria-current');
+  });
+  // Grey out an arrow when there is nowhere further to go.
+  document.getElementById('sw-prev').disabled = i === 0;
+  document.getElementById('sw-next').disabled = i === modules.length - 1;
+}
+
+buildSwitcher();
 
 function showSignup() {
   document.getElementById('std-content').style.display = 'none';

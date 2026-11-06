@@ -11,9 +11,9 @@
 .course-access form .course-access__primary { margin-top: .25rem; }
 .course-access__close { position: absolute; top: .7rem; right: .8rem; padding: .2rem; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 23px; }
 .course-access__message { min-height: 1.25em; margin-top: .8rem; color: var(--terracotta) !important; font-size: 12px !important; }
-/* Paid modules show a small padlock. The SVG is used as a mask so the icon
-   inherits the button's text colour (olive normally, white when .active). */
-.sw-btn.is-locked::after {
+/* Paid modules show a small padlock after their level in the module switcher's list.
+   The SVG is used as a mask so the icon inherits the text colour. */
+.sw-item.is-locked .sw-item__level::after {
   content: '';
   display: inline-block;
   width: .82em;
